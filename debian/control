@@ -1,0 +1,29 @@
+Source: linux-upstream
+Section: kernel
+Priority: optional
+Maintainer: pking <pking@cmsc421-3.hdihome.com>
+Rules-Requires-Root: no
+Build-Depends: bc, rsync, kmod, cpio, bison, flex | flex:native , libelf-dev:native, libssl-dev:native
+Homepage: https://www.kernel.org/
+
+Package: linux-image-5.15.67-test-project3-kernel3+
+Architecture: amd64
+Description: Linux kernel, version 5.15.67-test-project3-kernel3+
+ This package contains the Linux kernel, modules and corresponding other
+ files, version: 5.15.67-test-project3-kernel3+.
+
+Package: linux-libc-dev
+Section: devel
+Provides: linux-kernel-headers
+Architecture: amd64
+Description: Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+
+Package: linux-headers-5.15.67-test-project3-kernel3+
+Architecture: amd64
+Description: Linux kernel headers for 5.15.67-test-project3-kernel3+ on amd64
+ This package provides kernel header files for 5.15.67-test-project3-kernel3+ on amd64
+ .
+ This is useful for people who need to build external modules

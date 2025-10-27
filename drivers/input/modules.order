@@ -1,0 +1,4 @@
+drivers/input/mouse/psmouse.ko
+drivers/input/misc/pcspkr.ko
+drivers/input/joydev.ko
+drivers/input/evdev.ko

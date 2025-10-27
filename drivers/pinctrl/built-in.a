@@ -1,0 +1,39 @@
+!<thin>
+//                                              402       `
+core.o/
+pinctrl-utils.o/
+pinmux.o/
+pinconf.o/
+pinconf-generic.o/
+pinctrl-amd.o/
+intel/pinctrl-baytrail.o/
+intel/pinctrl-cherryview.o/
+intel/pinctrl-intel.o/
+intel/pinctrl-broxton.o/
+intel/pinctrl-cannonlake.o/
+intel/pinctrl-cedarfork.o/
+intel/pinctrl-denverton.o/
+intel/pinctrl-geminilake.o/
+intel/pinctrl-icelake.o/
+intel/pinctrl-lewisburg.o/
+intel/pinctrl-sunrisepoint.o/
+intel/pinctrl-tigerlake.o/
+
+/0              0           0     0     644     105448    `
+/8              0           0     0     644     11488     `
+/25             0           0     0     644     30304     `
+/35             0           0     0     644     17896     `
+/46             0           0     0     644     8888      `
+/65             0           0     0     644     45928     `
+/80             0           0     0     644     65968     `
+/106            0           0     0     644     64576     `
+/134            0           0     0     644     49960     `
+/157            0           0     0     644     53448     `
+/182            0           0     0     644     44432     `
+/210            0           0     0     644     20200     `
+/237            0           0     0     644     16328     `
+/264            0           0     0     644     27568     `
+/292            0           0     0     644     24408     `
+/317            0           0     0     644     20352     `
+/344            0           0     0     644     32744     `
+/374            0           0     0     644     39512     `

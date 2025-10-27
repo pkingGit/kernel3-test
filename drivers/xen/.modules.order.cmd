@@ -1,0 +1,1 @@
+cmd_drivers/xen/modules.order := {   cat drivers/xen/events/modules.order;   cat drivers/xen/xenbus/modules.order;   echo drivers/xen/xen-privcmd.ko; :; } | awk '!x[$$0]++' - > drivers/xen/modules.order

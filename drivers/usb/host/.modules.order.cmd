@@ -1,0 +1,1 @@
+cmd_drivers/usb/host/modules.order := {   echo drivers/usb/host/ehci-hcd.ko;   echo drivers/usb/host/ehci-pci.ko;   echo drivers/usb/host/ohci-hcd.ko;   echo drivers/usb/host/ohci-pci.ko; :; } | awk '!x[$$0]++' - > drivers/usb/host/modules.order

@@ -1,0 +1,6 @@
+drivers/ata/libata.ko
+drivers/ata/ahci.ko
+drivers/ata/libahci.ko
+drivers/ata/acard-ahci.ko
+drivers/ata/ata_piix.ko
+drivers/ata/ata_generic.ko

@@ -1,0 +1,1 @@
+cmd_crypto/crct10dif_common.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o crypto/crct10dif_common.ko crypto/crct10dif_common.o crypto/crct10dif_common.mod.o;  true

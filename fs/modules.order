@@ -1,0 +1,6 @@
+fs/mbcache.ko
+fs/configfs/configfs.ko
+fs/ext4/ext4.ko
+fs/jbd2/jbd2.ko
+fs/autofs/autofs4.ko
+fs/fuse/fuse.ko

@@ -1,0 +1,13 @@
+Package: linux-headers-5.15.67-test-project3-kernel3+
+Source: linux-upstream
+Version: 5.15.67-test-project3-kernel3+-7
+Architecture: amd64
+Maintainer: pking <pking@cmsc421-3.hdihome.com>
+Installed-Size: 47214
+Section: kernel
+Priority: optional
+Homepage: https://www.kernel.org/
+Description: Linux kernel headers for 5.15.67-test-project3-kernel3+ on amd64
+ This package provides kernel header files for 5.15.67-test-project3-kernel3+ on amd64
+ .
+ This is useful for people who need to build external modules

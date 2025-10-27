@@ -1,0 +1,1 @@
+cmd_drivers/i2c/busses/i2c-piix4.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o drivers/i2c/busses/i2c-piix4.ko drivers/i2c/busses/i2c-piix4.o drivers/i2c/busses/i2c-piix4.mod.o;  true

@@ -1,0 +1,27 @@
+!<thin>
+//                                              250       `
+pinctrl-baytrail.o/
+pinctrl-cherryview.o/
+pinctrl-intel.o/
+pinctrl-broxton.o/
+pinctrl-cannonlake.o/
+pinctrl-cedarfork.o/
+pinctrl-denverton.o/
+pinctrl-geminilake.o/
+pinctrl-icelake.o/
+pinctrl-lewisburg.o/
+pinctrl-sunrisepoint.o/
+pinctrl-tigerlake.o/
+
+/0              0           0     0     644     65968     `
+/20             0           0     0     644     64576     `
+/42             0           0     0     644     49960     `
+/59             0           0     0     644     53448     `
+/78             0           0     0     644     44432     `
+/100            0           0     0     644     20200     `
+/121            0           0     0     644     16328     `
+/142            0           0     0     644     27568     `
+/164            0           0     0     644     24408     `
+/183            0           0     0     644     20352     `
+/204            0           0     0     644     32744     `
+/228            0           0     0     644     39512     `

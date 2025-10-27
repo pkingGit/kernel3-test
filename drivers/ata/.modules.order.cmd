@@ -1,0 +1,1 @@
+cmd_drivers/ata/modules.order := {   echo drivers/ata/libata.ko;   echo drivers/ata/ahci.ko;   echo drivers/ata/libahci.ko;   echo drivers/ata/acard-ahci.ko;   echo drivers/ata/ata_piix.ko;   echo drivers/ata/ata_generic.ko; :; } | awk '!x[$$0]++' - > drivers/ata/modules.order

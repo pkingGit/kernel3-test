@@ -1,0 +1,12 @@
+Package: linux-image-5.15.67-test-project3-kernel3+
+Source: linux-upstream
+Version: 5.15.67-test-project3-kernel3+-7
+Architecture: amd64
+Maintainer: pking <pking@cmsc421-3.hdihome.com>
+Installed-Size: 22202
+Section: kernel
+Priority: optional
+Homepage: https://www.kernel.org/
+Description: Linux kernel, version 5.15.67-test-project3-kernel3+
+ This package contains the Linux kernel, modules and corresponding other
+ files, version: 5.15.67-test-project3-kernel3+.

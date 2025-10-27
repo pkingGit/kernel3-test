@@ -1,0 +1,1 @@
+cmd_drivers/mfd/built-in.a := echo >/dev/null; rm -f drivers/mfd/built-in.a; ar cDPrST drivers/mfd/built-in.a drivers/mfd/mfd-core.o drivers/mfd/syscon.o drivers/mfd/intel_soc_pmic_core.o drivers/mfd/intel_soc_pmic_crc.o drivers/mfd/intel_soc_pmic_chtwc.o

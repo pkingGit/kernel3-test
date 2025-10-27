@@ -1,0 +1,1 @@
+cmd_drivers/ata/ata_generic.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o drivers/ata/ata_generic.ko drivers/ata/ata_generic.o drivers/ata/ata_generic.mod.o;  true

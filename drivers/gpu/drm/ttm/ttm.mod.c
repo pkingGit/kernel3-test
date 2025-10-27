@@ -1,0 +1,153 @@
+#include <linux/module.h>
+#define INCLUDE_VERMAGIC
+#include <linux/build-salt.h>
+#include <linux/elfnote-lto.h>
+#include <linux/vermagic.h>
+#include <linux/compiler.h>
+
+BUILD_SALT;
+BUILD_LTO_INFO;
+
+MODULE_INFO(vermagic, VERMAGIC_STRING);
+MODULE_INFO(name, KBUILD_MODNAME);
+
+__visible struct module __this_module
+__section(".gnu.linkonce.this_module") = {
+	.name = KBUILD_MODNAME,
+	.arch = MODULE_ARCH_INIT,
+};
+
+MODULE_INFO(intree, "Y");
+
+#ifdef CONFIG_RETPOLINE
+MODULE_INFO(retpoline, "Y");
+#endif
+
+static const struct modversion_info ____versions[]
+__used __section("__versions") = {
+	{ 0xe28fa882, "module_layout" },
+	{ 0x2d3385d3, "system_wq" },
+	{ 0xd1c97624, "kmalloc_caches" },
+	{ 0x4831da6e, "drm_vma_offset_remove" },
+	{ 0x4212cb34, "put_devmap_managed_page" },
+	{ 0x53b954a2, "up_read" },
+	{ 0xe01b0ece, "debugfs_create_dir" },
+	{ 0xfd93ee35, "ioremap_wc" },
+	{ 0x510caa5f, "single_open" },
+	{ 0x7aa1756e, "kvfree" },
+	{ 0xcc328a5c, "reservation_ww_class" },
+	{ 0xe123f3d9, "dma_fence_release" },
+	{ 0x46cf10eb, "cachemode2protval" },
+	{ 0xc04dbc40, "dma_resv_test_signaled" },
+	{ 0xa4191c0b, "memset_io" },
+	{ 0xc8574fb5, "set_pages_array_uc" },
+	{ 0xc6818247, "single_release" },
+	{ 0x83047a26, "seq_puts" },
+	{ 0xa92ec74, "boot_cpu_data" },
+	{ 0xffeedf6a, "delayed_work_timer_fn" },
+	{ 0x7cdbd57a, "__mmap_lock_do_trace_released" },
+	{ 0xf5995852, "seq_printf" },
+	{ 0x56470118, "__warn_printk" },
+	{ 0x837b7b09, "__dynamic_pr_debug" },
+	{ 0x87b8798d, "sg_next" },
+	{ 0xaf9184a3, "alloc_pages" },
+	{ 0xc6f46339, "init_timer_key" },
+	{ 0x2d5f69b3, "rcu_read_unlock_strict" },
+	{ 0x9fa7184a, "cancel_delayed_work_sync" },
+	{ 0x3213f038, "mutex_unlock" },
+	{ 0x28779e52, "drm_printf" },
+	{ 0x95a214fc, "dma_free_attrs" },
+	{ 0x73d90568, "set_pages_array_wc" },
+	{ 0x8d9ca0e6, "dma_fence_enable_sw_signaling" },
+	{ 0x4a7d75b0, "drm_memcpy_from_wc" },
+	{ 0x9e8bfef8, "debugfs_create_file" },
+	{ 0x97651e6c, "vmemmap_base" },
+	{ 0x196ff43d, "seq_read" },
+	{ 0x40c7247c, "si_meminfo" },
+	{ 0x32875f4c, "pv_ops" },
+	{ 0xffdbf44d, "set_page_dirty" },
+	{ 0x6cc43f33, "dma_resv_copy_fences" },
+	{ 0xbb9ed3bf, "mutex_trylock" },
+	{ 0x5b8239ca, "__x86_return_thunk" },
+	{ 0xa6807219, "agp_unbind_memory" },
+	{ 0xc707c140, "agp_allocate_memory" },
+	{ 0x50d1f870, "pgprot_writecombine" },
+	{ 0xf0517d7a, "drm_mm_init" },
+	{ 0xc32cfb36, "vmf_insert_pfn_prot" },
+	{ 0xd38cd261, "__default_kernel_pte_mask" },
+	{ 0xa2b07647, "current_task" },
+	{ 0xe8a034df, "drm_dev_exit" },
+	{ 0xcefb0c9f, "__mutex_init" },
+	{ 0x98d274df, "dma_resv_add_shared_fence" },
+	{ 0xe1537255, "__list_del_entry_valid" },
+	{ 0xde80cd09, "ioremap" },
+	{ 0xaa074440, "vmap" },
+	{ 0x4c9d28b0, "phys_base" },
+	{ 0x9084b044, "clear_page_erms" },
+	{ 0x213a6e38, "shmem_read_mapping_page_gfp" },
+	{ 0x5bc99b3, "ww_mutex_lock" },
+	{ 0x925493f, "clear_page_orig" },
+	{ 0xdc3cafce, "debugfs_remove" },
+	{ 0x9e9fdd9d, "memunmap" },
+	{ 0x284e2acd, "dma_alloc_attrs" },
+	{ 0x4dfa8d4b, "mutex_lock" },
+	{ 0x7deff161, "dma_resv_fini" },
+	{ 0x731c4a9c, "dma_fence_signal" },
+	{ 0x542a4a4a, "agp_free_memory" },
+	{ 0xa349761f, "fput" },
+	{ 0x68f31cbd, "__list_add_valid" },
+	{ 0x37de3d91, "shmem_file_setup" },
+	{ 0xfa1f36c0, "mark_page_accessed" },
+	{ 0x800473f, "__cond_resched" },
+	{ 0x599fb41c, "kvmalloc_node" },
+	{ 0x7cd8d75e, "page_offset_base" },
+	{ 0x23b4e0d7, "clear_page_rep" },
+	{ 0xc8a34b00, "__free_pages" },
+	{ 0xf34b3f06, "unregister_shrinker" },
+	{ 0x33b84f74, "copy_page" },
+	{ 0x97e27fa8, "dma_resv_reserve_shared" },
+	{ 0xb2fcb56d, "queue_delayed_work_on" },
+	{ 0x296695f, "refcount_warn_saturate" },
+	{ 0xd0da656b, "__stack_chk_fail" },
+	{ 0x3b0d6dbc, "__drmm_add_action_or_reset" },
+	{ 0x92997ed8, "_printk" },
+	{ 0xaa58f955, "dma_map_page_attrs" },
+	{ 0x65487097, "__x86_indirect_thunk_rax" },
+	{ 0x65eaced, "set_pages_wb" },
+	{ 0xf7acb66, "drm_mm_print" },
+	{ 0xbdfb6dbb, "__fentry__" },
+	{ 0x98c039dc, "dma_fence_wait_timeout" },
+	{ 0x183bd601, "kmem_cache_alloc_trace" },
+	{ 0xba8fbd64, "_raw_spin_lock" },
+	{ 0xfe2b333a, "__tracepoint_mmap_lock_released" },
+	{ 0x4d924f20, "memremap" },
+	{ 0xe8a0e334, "drm_vma_offset_add" },
+	{ 0x1fe4eb9c, "seq_lseek" },
+	{ 0x37a0cba, "kfree" },
+	{ 0x94961283, "vunmap" },
+	{ 0xbcaae2ac, "unmap_mapping_range" },
+	{ 0x23f8b9ed, "register_shrinker" },
+	{ 0x69f667b6, "debugfs_create_atomic_t" },
+	{ 0xedc03953, "iounmap" },
+	{ 0xc3696ab4, "ww_mutex_unlock" },
+	{ 0x556422b3, "ioremap_cache" },
+	{ 0xb4032484, "drm_mm_insert_node_in_range" },
+	{ 0x2754aa61, "dma_unmap_page_attrs" },
+	{ 0x57698a50, "drm_mm_takedown" },
+	{ 0x1899cae5, "dma_resv_wait_timeout" },
+	{ 0x6a98893, "dma_resv_init" },
+	{ 0x7098599a, "vmalloc_to_page" },
+	{ 0x28c996d3, "agp_bind_memory" },
+	{ 0xf824c7db, "__drm_printfn_debug" },
+	{ 0x4b7ebf95, "drm_mm_remove_node" },
+	{ 0x287b8037, "param_ops_ulong" },
+	{ 0x38c1510d, "dma_resv_add_excl_fence" },
+	{ 0x9c04f894, "drm_dev_enter" },
+	{ 0x9dd74a03, "ww_mutex_lock_interruptible" },
+	{ 0x5b95c3d6, "__put_page" },
+	{ 0xc31db0ce, "is_vmalloc_addr" },
+	{ 0x587f22d7, "devmap_managed_key" },
+};
+
+MODULE_INFO(depends, "drm");
+

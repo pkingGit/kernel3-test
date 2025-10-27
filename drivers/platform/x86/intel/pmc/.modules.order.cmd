@@ -1,0 +1,1 @@
+cmd_drivers/platform/x86/intel/pmc/modules.order := {   echo drivers/platform/x86/intel/pmc/intel_pmc_core.ko;   echo drivers/platform/x86/intel/pmc/intel_pmc_core_pltdrv.ko; :; } | awk '!x[$$0]++' - > drivers/platform/x86/intel/pmc/modules.order

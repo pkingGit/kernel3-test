@@ -1,0 +1,1 @@
+cmd_/usr/src/project-3/project3-kernel/tools/objtool/arch/x86/objtool-in.o :=  ld -r -o /usr/src/project-3/project3-kernel/tools/objtool/arch/x86/objtool-in.o  /usr/src/project-3/project3-kernel/tools/objtool/arch/x86/special.o /usr/src/project-3/project3-kernel/tools/objtool/arch/x86/decode.o

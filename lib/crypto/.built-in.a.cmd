@@ -1,0 +1,1 @@
+cmd_lib/crypto/built-in.a := echo >/dev/null; rm -f lib/crypto/built-in.a; ar cDPrST lib/crypto/built-in.a lib/crypto/chacha.o lib/crypto/blake2s.o lib/crypto/blake2s-generic.o lib/crypto/blake2s-selftest.o lib/crypto/sha256.o

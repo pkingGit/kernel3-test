@@ -1,0 +1,4 @@
+linux-headers-5.15.67-test-project3-kernel3+_5.15.67-test-project3-kernel3+-7_amd64.deb kernel optional
+linux-image-5.15.67-test-project3-kernel3+_5.15.67-test-project3-kernel3+-7_amd64.deb kernel optional
+linux-libc-dev_5.15.67-test-project3-kernel3+-7_amd64.deb devel optional
+linux-upstream_5.15.67-test-project3-kernel3+-7_amd64.buildinfo kernel optional

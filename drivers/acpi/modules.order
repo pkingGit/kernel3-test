@@ -1,0 +1,3 @@
+drivers/acpi/ac.ko
+drivers/acpi/button.ko
+drivers/acpi/video.ko

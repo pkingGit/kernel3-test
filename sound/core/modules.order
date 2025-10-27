@@ -1,0 +1,3 @@
+sound/core/snd.ko
+sound/core/snd-timer.ko
+sound/core/snd-pcm.ko

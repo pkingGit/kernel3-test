@@ -1,0 +1,1 @@
+cmd_drivers/iommu/intel/built-in.a := echo >/dev/null; rm -f drivers/iommu/intel/built-in.a; ar cDPrST drivers/iommu/intel/built-in.a drivers/iommu/intel/dmar.o drivers/iommu/intel/iommu.o drivers/iommu/intel/pasid.o drivers/iommu/intel/trace.o drivers/iommu/intel/cap_audit.o drivers/iommu/intel/svm.o drivers/iommu/intel/irq_remapping.o

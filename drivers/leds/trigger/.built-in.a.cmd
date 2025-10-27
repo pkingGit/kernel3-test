@@ -1,0 +1,1 @@
+cmd_drivers/leds/trigger/built-in.a := echo >/dev/null; rm -f drivers/leds/trigger/built-in.a; ar cDPrST drivers/leds/trigger/built-in.a drivers/leds/trigger/ledtrig-disk.o drivers/leds/trigger/ledtrig-cpu.o drivers/leds/trigger/ledtrig-panic.o

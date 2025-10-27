@@ -413,5 +413,11 @@
 545	x32	execveat		compat_sys_execveat
 546	x32	preadv2			compat_sys_preadv64v2
 547	x32	pwritev2		compat_sys_pwritev64v2
+
+600     common  init_kern_application   sys_init_kern_application
+601     common  free_kern_application   sys_free_kern_application
+602     common  kern_add_priority       sys_kern_add_priority
+603     common  kern_get_priority       sys_kern_get_priority
+
 # This is the end of the legacy x32 range.  Numbers 548 and above are
 # not special and are not to be used for x32-specific syscalls.

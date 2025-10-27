@@ -1,0 +1,160 @@
+#include <linux/module.h>
+#define INCLUDE_VERMAGIC
+#include <linux/build-salt.h>
+#include <linux/elfnote-lto.h>
+#include <linux/vermagic.h>
+#include <linux/compiler.h>
+
+BUILD_SALT;
+BUILD_LTO_INFO;
+
+MODULE_INFO(vermagic, VERMAGIC_STRING);
+MODULE_INFO(name, KBUILD_MODNAME);
+
+__visible struct module __this_module
+__section(".gnu.linkonce.this_module") = {
+	.name = KBUILD_MODNAME,
+	.init = init_module,
+#ifdef CONFIG_MODULE_UNLOAD
+	.exit = cleanup_module,
+#endif
+	.arch = MODULE_ARCH_INIT,
+};
+
+MODULE_INFO(intree, "Y");
+
+#ifdef CONFIG_RETPOLINE
+MODULE_INFO(retpoline, "Y");
+#endif
+
+static const struct modversion_info ____versions[]
+__used __section("__versions") = {
+	{ 0xe28fa882, "module_layout" },
+	{ 0x2d3385d3, "system_wq" },
+	{ 0x414e7d12, "bus_register" },
+	{ 0xf2ebe768, "device_remove_file" },
+	{ 0x75328114, "cdev_del" },
+	{ 0xd1c97624, "kmalloc_caches" },
+	{ 0xeb233a45, "__kmalloc" },
+	{ 0x65f84319, "cdev_init" },
+	{ 0xf90a1e85, "__x86_indirect_thunk_r8" },
+	{ 0x9c7e6e64, "driver_register" },
+	{ 0xe01b0ece, "debugfs_create_dir" },
+	{ 0x510caa5f, "single_open" },
+	{ 0xa0eb4545, "param_ops_int" },
+	{ 0x754d539c, "strlen" },
+	{ 0x139f2189, "__kfifo_alloc" },
+	{ 0xc6818247, "single_release" },
+	{ 0xc4152111, "power_supply_unregister" },
+	{ 0x37110088, "remove_wait_queue" },
+	{ 0xa17f169c, "input_ff_event" },
+	{ 0xefe78f6, "input_alloc_absinfo" },
+	{ 0x6bd0e573, "down_interruptible" },
+	{ 0xf5995852, "seq_printf" },
+	{ 0x56470118, "__warn_printk" },
+	{ 0x3c12dfe, "cancel_work_sync" },
+	{ 0x3d598bde, "device_destroy" },
+	{ 0x111fce4a, "power_supply_powers" },
+	{ 0x6729d3df, "__get_user_4" },
+	{ 0x66b4cc41, "kmemdup" },
+	{ 0x66cca4f9, "__x86_indirect_thunk_rcx" },
+	{ 0x3213f038, "mutex_unlock" },
+	{ 0x6091b333, "unregister_chrdev_region" },
+	{ 0x999e8297, "vfree" },
+	{ 0x9e8bfef8, "debugfs_create_file" },
+	{ 0x3c3ff9fd, "sprintf" },
+	{ 0x196ff43d, "seq_read" },
+	{ 0x32875f4c, "pv_ops" },
+	{ 0xe2d5255a, "strcmp" },
+	{ 0x6d16c104, "mutex_lock_killable" },
+	{ 0x63cfccfd, "input_set_abs_params" },
+	{ 0xfb384d37, "kasprintf" },
+	{ 0xc28bd12f, "bus_rescan_devices" },
+	{ 0xb143a192, "power_supply_changed" },
+	{ 0x51921f02, "input_event" },
+	{ 0xd9a5ea54, "__init_waitqueue_head" },
+	{ 0x6b10bee1, "_copy_to_user" },
+	{ 0xaad8c7d6, "default_wake_function" },
+	{ 0x5b8239ca, "__x86_return_thunk" },
+	{ 0xdc00f270, "_dev_warn" },
+	{ 0xfb578fc5, "memset" },
+	{ 0xe799884f, "device_del" },
+	{ 0x22f12fc1, "power_supply_get_drvdata" },
+	{ 0xd35cce70, "_raw_spin_unlock_irqrestore" },
+	{ 0xa2b07647, "current_task" },
+	{ 0xe9ffc063, "down_trylock" },
+	{ 0x4578f528, "__kfifo_to_user" },
+	{ 0xcefb0c9f, "__mutex_init" },
+	{ 0xbcab6ee6, "sscanf" },
+	{ 0xe1537255, "__list_del_entry_valid" },
+	{ 0xa50a3da7, "_find_next_bit" },
+	{ 0xbb550bd6, "driver_unregister" },
+	{ 0x807124bd, "fasync_helper" },
+	{ 0x5a921311, "strncmp" },
+	{ 0xdc3cafce, "debugfs_remove" },
+	{ 0x4dfa8d4b, "mutex_lock" },
+	{ 0x6626afca, "down" },
+	{ 0x736f6f28, "noop_llseek" },
+	{ 0xb10dd8d4, "device_create" },
+	{ 0xe19ca4b, "device_add" },
+	{ 0xa7a2bece, "_dev_err" },
+	{ 0x69239d8a, "bus_unregister" },
+	{ 0x68f31cbd, "__list_add_valid" },
+	{ 0xf5e7ea40, "ktime_get_coarse_ts64" },
+	{ 0x9500debf, "device_create_file" },
+	{ 0x37d92150, "cdev_add" },
+	{ 0x5ae39272, "compat_ptr_ioctl" },
+	{ 0x1a5cc3d0, "_dev_info" },
+	{ 0x9f984513, "strrchr" },
+	{ 0x40a9b349, "vzalloc" },
+	{ 0x18d62507, "bus_for_each_dev" },
+	{ 0x6383b27c, "__x86_indirect_thunk_rdx" },
+	{ 0xb2fd5ceb, "__put_user_4" },
+	{ 0xa916b694, "strnlen" },
+	{ 0xf49af822, "put_device" },
+	{ 0xd0da656b, "__stack_chk_fail" },
+	{ 0x862ff56e, "input_register_device" },
+	{ 0x1000e51, "schedule" },
+	{ 0x1d24c881, "___ratelimit" },
+	{ 0x5a9eb73e, "device_reprobe" },
+	{ 0x92997ed8, "_printk" },
+	{ 0x470e739e, "input_free_device" },
+	{ 0x65487097, "__x86_indirect_thunk_rax" },
+	{ 0xbdfb6dbb, "__fentry__" },
+	{ 0xcbd4898c, "fortify_panic" },
+	{ 0x183bd601, "kmem_cache_alloc_trace" },
+	{ 0xba8fbd64, "_raw_spin_lock" },
+	{ 0x7ccf8287, "__dynamic_dev_dbg" },
+	{ 0x34db050b, "_raw_spin_lock_irqsave" },
+	{ 0xdb760f52, "__kfifo_free" },
+	{ 0x3eeb2322, "__wake_up" },
+	{ 0x2c256e1f, "input_scancode_to_scalar" },
+	{ 0xe1a7ab95, "bus_for_each_drv" },
+	{ 0x4afb2238, "add_wait_queue" },
+	{ 0x1fe4eb9c, "seq_lseek" },
+	{ 0x37a0cba, "kfree" },
+	{ 0x69acdf38, "memcpy" },
+	{ 0x394511e5, "input_unregister_device" },
+	{ 0x618a3a47, "device_initialize" },
+	{ 0xcf2a6966, "up" },
+	{ 0x96848186, "scnprintf" },
+	{ 0x48106fee, "class_destroy" },
+	{ 0x3975f4d2, "kill_fasync" },
+	{ 0x48a42456, "driver_attach" },
+	{ 0xf23fcb99, "__kfifo_in" },
+	{ 0x9291cd3b, "memdup_user" },
+	{ 0xc5b6f236, "queue_work_on" },
+	{ 0x656e4a6e, "snprintf" },
+	{ 0xbac4015f, "dev_set_name" },
+	{ 0xadcefbad, "power_supply_register" },
+	{ 0x13c49cc2, "_copy_from_user" },
+	{ 0xcee0cc87, "__class_create" },
+	{ 0x88db9f48, "__check_object_size" },
+	{ 0xe3ec2f2b, "alloc_chrdev_region" },
+	{ 0xc8dcc62a, "krealloc" },
+	{ 0x9c6febfc, "add_uevent_var" },
+	{ 0x2d4feddb, "input_allocate_device" },
+};
+
+MODULE_INFO(depends, "");
+

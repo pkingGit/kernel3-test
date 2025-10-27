@@ -1,0 +1,1 @@
+cmd_drivers/scsi/modules.order := {   cat drivers/scsi/device_handler/modules.order;   cat drivers/scsi/megaraid/modules.order;   echo drivers/scsi/scsi_mod.ko;   echo drivers/scsi/scsi_common.ko;   echo drivers/scsi/sd_mod.ko;   echo drivers/scsi/sr_mod.ko;   echo drivers/scsi/sg.ko; :; } | awk '!x[$$0]++' - > drivers/scsi/modules.order

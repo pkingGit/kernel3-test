@@ -1,0 +1,4 @@
+drivers/usb/host/ehci-hcd.ko
+drivers/usb/host/ehci-pci.ko
+drivers/usb/host/ohci-hcd.ko
+drivers/usb/host/ohci-pci.ko

@@ -1,0 +1,14 @@
+!<thin>
+//                                              110       `
+cpufreq.o/
+freq_table.o/
+cpufreq_stats.o/
+cpufreq_performance.o/
+cpufreq_governor_attr_set.o/
+intel_pstate.o/
+/0              0           0     0     644     202136    `
+/11             0           0     0     644     22912     `
+/25             0           0     0     644     11712     `
+/42             0           0     0     644     6056      `
+/65             0           0     0     644     9264      `
+/94             0           0     0     644     106600    `
