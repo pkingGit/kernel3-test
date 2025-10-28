@@ -21,10 +21,12 @@ static DEFINE_MUTEX(application_free_lock);
 
 const long ERR_NULL_NODE = 99;
 
-void freeQueue(priority_queue_421_t* queue);
-long enqueueNode(priority_queue_421_t* queue, queue_node_421_t* node);
-long dequeueNode(priority_queue_421_t* queue, queue_node_421_t* result);
 priority_queue_421_t* createQueue(char* priorityName);
+void displayQueue(priority_queue_421_t* queue);
+long dequeueNode(priority_queue_421_t* queue, queue_node_421_t* result);
+long enqueueNode(priority_queue_421_t* queue, queue_node_421_t* node);
+void freeQueue(priority_queue_421_t* queue);
+priority_421_t getQueuePriority(priority_queue_421_t* queue);
 
 proj_app_ctx_t* application = NULL;
 
@@ -67,44 +69,33 @@ SYSCALL_DEFINE0(init_kern_application) {
 }
 
 SYSCALL_DEFINE0(free_kern_application) {
-printk("free_kern_application: HERE0");
-printk("free_kern_application: application_init_lock=%d, application_free_lock=%d", mutex_is_locked(&application_init_lock), mutex_is_locked(&application_free_lock));
   // If application context is NULL
   if (application == NULL){
     // Print error message and return error
     printk("free_kern_application: ERROR: application context already freed");
     return EPERM;
   }
-printk("free_kern_application: HERE1");
 
   // Lock application context (from initing and freeing)
   mutex_lock(&application_init_lock);
-printk("free_kern_application: HERE2");
   mutex_lock(&application_free_lock);
-printk("free_kern_application: HERE3");
 
   // Deallocate queues
   freeQueue(application->highQueue);
-printk("free_kern_application: HERE4");
   freeQueue(application->mediumQueue);
-printk("free_kern_application: HERE5");
   freeQueue(application->lowQueue);
-printk("free_kern_application: HERE6");
 
   // Deallocate application context
   application->highQueue = NULL;
   application->mediumQueue = NULL;
   application->lowQueue = NULL;
   kfree(application);
-printk("free_kern_application: HERE7");
 
   application = NULL;
 
   // Unlock application context (from initing and freeing)
   mutex_unlock(&application_init_lock);
-printk("free_kern_application: HERE8");
   mutex_unlock(&application_free_lock);
-printk("free_kern_application: HERE9");
 
   // Return success
   return 0;
@@ -256,8 +247,6 @@ long dequeueNode(priority_queue_421_t* queue, queue_node_421_t* result){
 
   // Deallocate kernel space for result
   kfree(knode);
-printk("INFO: node[%d](%d) retrieved", result->id, result->priority);
-printk("INFO: num_nodes=%d", queue->num_nodes);
 
   // Unlock queue
   mutex_unlock(queue->lock);
@@ -314,11 +303,10 @@ long enqueueNode(priority_queue_421_t* queue, queue_node_421_t* node){
     // Assign node as queue tail
     queue->tail = knode;
   }
+  knode->next = NULL;
 
   // Increment queue node count
   queue->num_nodes++;
-printk("INFO: node[%d](%d) added", knode->id, knode->priority);
-printk("INFO: num_nodes=%d", queue->num_nodes);
 
   // Unlock queue
   mutex_unlock(queue->lock);
@@ -332,14 +320,11 @@ printk("INFO: num_nodes=%d", queue->num_nodes);
  * @param queue     priority queue.
  */
 void freeQueue(priority_queue_421_t* queue){
-printk("freeQueue: HERE0");
   if (queue != NULL){
     queue_node_421_t* node;
-printk("freeQueue: HERE1");
 
     // Lock queue
     mutex_lock(queue->lock);
-printk("freeQueue: HERE2");
 
     // Deallocate queue nodes
     while ((node = queue->head) != NULL){
@@ -348,24 +333,58 @@ printk("freeQueue: HERE2");
       // Deallocate node
       kfree(node);
     }
-printk("freeQueue: HERE3");
 
     // Unlock queue
     mutex_unlock(queue->lock);
-printk("freeQueue: HERE4");
 
-    // Destroy and deallocate queue mutex
-    mutex_destroy(queue->lock);
-printk("freeQueue: HERE5");
+    // Deallocate queue mutex
     kfree(queue->lock);
-printk("freeQueue: HERE6");
 
     // Deallocate queue
     queue->tail = NULL;
     queue->lock = NULL;
     queue->num_nodes = 0;
     kfree(queue);
-printk("freeQueue: HERE7");
   }
+}
+
+/**
+ * Displays priority queue.
+ * @param queue     priority queue.
+ */
+void displayQueue(priority_queue_421_t* queue){
+  priority_421_t queuePriority = getQueuePriority(queue);
+
+  printk(" ");
+  printk("displayQueue[%d]: *********BEGIN***********", queuePriority);
+  printk("queue: %p", queue);
+
+  if (queue != NULL){
+    queue_node_421_t* node;
+
+    // Display queue nodes
+    node = queue->head;
+    while (node != NULL){
+      printk("displayQueue: node: %p, id=%d, priority=%d, next=%p, dataLen=%d [queue=%p, num_nodes=%d]", node, node->id, node->priority, queue->head->next, (int)strlen(node->data), queue, queue->num_nodes);
+
+      // Get next node
+      node = node->next;
+    }
+    printk("displayQueue[%d]: *********END***********", queuePriority);
+    printk(" ");
+  }
+}
+
+/**
+ * Determines a queue's priority.
+ * @param queue     priority queue.
+ * @returns queue priority.
+ */
+priority_421_t getQueuePriority(priority_queue_421_t* queue){
+  int result = -1;
+  if (queue == application->highQueue){result = HIGH;}
+  else if (queue == application->mediumQueue){result = MEDIUM;}
+  else if (queue == application->lowQueue){result = LOW;}
+  return result;
 }
 

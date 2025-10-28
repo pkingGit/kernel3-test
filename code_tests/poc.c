@@ -213,6 +213,7 @@ void test1(char** data, int numData){
 	thread_arg_t args[NUM_THREADS_1];
 	int err = pthread_mutex_init(&lock, NULL);
 	if (err != 0){
+		// Print error message and return
 		fprintf(stderr, "ERROR: Failed to initialize mutex. Error Code: %d\n", err);
 		return;
 	}
@@ -275,6 +276,7 @@ void test1(char** data, int numData){
 
 	// Destroy mutex lock
 	if ((err = pthread_mutex_destroy(&lock)) != 0){
+		// Print error message and return
 		fprintf(stderr, "ERROR: Failed to destroy mutex. Error Code: %d\n", err);
 		return;
 	}	
@@ -294,6 +296,7 @@ void test2(char** data, int numData){
 	thread_arg_t args[NUM_THREADS_2];
 	int err = pthread_mutex_init(&lock, NULL);
 	if (err != 0){
+		// Print error message and return
 		fprintf(stderr, "ERROR: Failed to initialize mutex. Error Code: %d\n", err);
 		return;
 	}
@@ -360,6 +363,7 @@ void test2(char** data, int numData){
 
 	// Destroy mutex lock
 	if ((err = pthread_mutex_destroy(&lock)) != 0){
+		// Print error message and return
 		fprintf(stderr, "ERROR: Failed to destroy mutex. Error Code: %d\n", err);
 		return;
 	}	

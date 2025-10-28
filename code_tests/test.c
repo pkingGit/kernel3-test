@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include <math.h>
 #include <errno.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -15,11 +16,14 @@
 #define ADD_PRIORITY_SYSCALL 602
 #define GET_PRIORITY_SYSCALL 603
 
+#define MUTEX_FAILURE -998;
+#define TEST_FAILED -999;
+
+#define NUM_NODES 10
+
 #define NUM_THREADS_1 100
 #define NUM_THREADS_2 30
 #define NUM_THREADS_3 20
-
-#define MUTEX_FAILURE -999;
 
 
 // Test data
@@ -28,6 +32,8 @@ const char* DATA = "Four score and seven years ago our fathers brought forth on 
 "Now we are engaged in a great civil war, testing whether that nation, or any nation so conceived and so dedicated, can long endure. We are met on a great battle-field of that war. We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this. "
 ""
 "But, in a larger sense, we can not dedicate—we can not consecrate—we can not hallow—this ground. The brave men, living and dead, who struggled here, have consecrated it, far above our poor power to add or detract. The world will little note, nor long remember what we say here, but it can never forget what they did here. It is for us the living, rather, to be dedicated here to the unfinished work which they who fought here have thus far so nobly advanced. It is rather for us to be here dedicated to the great task remaining before us—that from these honored dead we take increased devotion to that cause for which they gave the last full measure of devotion—that we here highly resolve that these dead shall not have died in vain—that this nation, under God, shall have a new birth of freedom—and that government of the people, by the people, for the people, shall not perish from the earth.";
+
+const size_t NODE_SIZE = sizeof(queue_node_421_t);
 
 // Mutex lock
 pthread_mutex_t lock;
@@ -41,24 +47,28 @@ typedef struct{
 } thread_arg_t;
 
 // Function declarations
+void cleanupNodeArray(queue_node_421_t** array, int numElements);
+queue_node_421_t** cloneNodes(queue_node_421_t** nodes, int numNodes);
+int compareIntegers(const void *a, const void *b);
 char* concatElements(char** string, int numElements, int start, int count, char* delim);
+queue_node_421_t** createPriorityNodes(int numNodes, char** data, int numData);
 int getArrayLength(char** array);
 priority_421_t getPriority(int priorityNum);
 int getRandomInt(int max);
+int getRemainingNodes();
 char** getTokens(const char* string);
-queue_node_421_t** createPriorityNodes(int numNodes, char** data, int numData);
 long add_priority_threaded(queue_node_421_t** nodes, int numNodes);
 long get_priority_threaded(queue_node_421_t** nodes, int numNodes);
+void printFail(char* message);
+void printPass(char* message);
 long random_add_get_priority_threaded(char** data, int numData, int numThreads);
 long random_init_free_application_threaded(int numthreads);
-void test_threaded(char** data, int numData);
-void test_nonthreaded(char** data, int numData);
+void test_add_priority(queue_node_421_t** nodes);
+void test_free_app(queue_node_421_t** nodes);
+void test_get_priority(queue_node_421_t** nodes);
 void test_init_app();
-void test_add_priority();
-void test_get_priority();
-void test_free_app();
-void printPass(char* message);
-void printFail(char* message);
+void test_nonthreaded(char** data, int numData);
+void test_threaded(char** data, int numData);
 
 // System function calls
 long init_kern_application() {
@@ -206,6 +216,7 @@ void main(int argc, char** argv){
 	test_threaded(data, numData);
 
 	// Cleanup
+	free(data[0]);
 	free(data);
 	printf("Done\n");
 
@@ -219,23 +230,25 @@ void main(int argc, char** argv){
  * @param numData	number of array elements.
  */
 void test_nonthreaded(char** data, int numData){
+	printf("\nPerforming non-threaded tests...\n");
+
 	// Create test nodes
-	queue_node_421_t** nodes = createPriorityNodes(5, data, numData);
+	queue_node_421_t** nodes = createPriorityNodes(NUM_NODES, data, numData);
 
 	// Run init application tests
 	test_init_app();
+
+	// Run free application tests
+	test_free_app(nodes);
 
 	// Run add priority tests
 	test_add_priority(nodes);
 
 	// Run get priority tests
-	test_get_priority();
-
-	// Run free application tests
-	test_free_app();
-
+	test_get_priority(nodes);
+	
 	// Cleanup
-	free(nodes);
+	cleanupNodeArray(nodes, NUM_NODES);
 }
 
 /**
@@ -244,88 +257,71 @@ void test_nonthreaded(char** data, int numData){
  * @param numData	number of array elements.
  */
 void test_threaded(char** data, int numData){
+	printf("\nPerforming threaded tests...\n");
+
 	int numNodes = NUM_THREADS_1;
+	char testName[100];
 
 	// Initialize application
 	long rc = init_kern_application();
 
-	// Add priority nodes using threads
+	// Create test nodes
 	queue_node_421_t** nodes = createPriorityNodes(numNodes, data, numData);
-	
+
+	// Add priority nodes using threads
+	sprintf(testName, "test_add_priority_%d_threads", numNodes);
 	rc = add_priority_threaded(nodes, numNodes);
 	if (rc == 0){
-		printPass("test_add_priority_100_threads");
+		printPass(testName);
 	}
 	else {
-		printFail("test_add_priority_100_threads");
+		printFail(testName);
 	}
 
 	// Get priority nodes using threads
+	sprintf(testName, "test_get_priority_%d_threads", numNodes);
 	rc = get_priority_threaded(nodes, numNodes);
 	if (rc == 0){
-		printPass("test_get_priority_100_threads");
+		printPass(testName);
 	}
 	else {
-		printFail("test_get_priority_100_threads");
+		printFail(testName);
 	}
 
 	// Cleanup nodes
-	free(nodes);
+	cleanupNodeArray(nodes, numNodes);
 
 	// Free application
 	rc = free_kern_application();	
+
+	// Initialize application
+	rc = init_kern_application();
 
 	// Add/get priority nodes randomly using threads
+	sprintf(testName, "test_random_add_get_priority_%d_threads", NUM_THREADS_2);
 	rc = random_add_get_priority_threaded(data, numData, NUM_THREADS_2);
 	if (rc == 0){
-		printPass("test_random_add_get_priority_30_threads");
+		printPass(testName);
 	}
 	else {
-		printFail("test_random_add_get_priority_30_threads");
-	}
-
-	// Init/free application randomly using threads
-	rc = random_init_free_application_threaded(NUM_THREADS_3);
-	if (rc == 0){
-		printPass("test_random_init_free_application_20_threads");
-	}
-	else {
-		printFail("test_random_init_free_application_20_threads");
+		printFail(testName);
 	}
 
 	// Free application
 	rc = free_kern_application();	
-}
 
-/**
- * Creates given number of priority nodes.
- * @param numNodes	number of nodes to create.
- * @param data		array of test data.
- * @param numData	number of array elements.
- * @returns array of priority nodes.
- */
-queue_node_421_t** createPriorityNodes(int numNodes, char** data, int numData){
-	queue_node_421_t** result = NULL;
-
-	if (numNodes <= 0){
-		return result;
+	// Init/free application randomly using threads
+	sprintf(testName, "test_random_init_free_application_%d_threads", NUM_THREADS_3);
+	rc = random_init_free_application_threaded(NUM_THREADS_3);
+	if (rc == 0){
+		printPass(testName);
+	}
+	else {
+		printFail(testName);
 	}
 
-	result = (void *)malloc(sizeof(queue_node_421_t*) * numNodes);
-	int dataOffset = 0;
-	for (int i = 0; i < numNodes; i++){
-		result[i] = (void *)malloc(sizeof(queue_node_421_t));
-		result[i]->id = i + 1;
-		result[i]->priority = getPriority(getRandomInt(3));
-		int numValues = getRandomInt(10);
-		char* dataString = concatElements(data, numData, dataOffset, numValues, " ");
-		strncpy(result[i]->data, dataString, sizeof(result[i]->data) - 1);
-		free(dataString);
-
-		dataOffset += numValues;
-	}
-
-	return result;
+	// Free application
+	rc = free_kern_application();	
 }
 
 /**
@@ -340,12 +336,12 @@ long add_priority_threaded(queue_node_421_t** nodes, int numNodes){
 	thread_arg_t args[numThreads];
 	int err = pthread_mutex_init(&lock, NULL);
 	if (err != 0){
+		// Print error message and return error
 		fprintf(stderr, "ERROR: Failed to initialize mutex. Error Code: %d\n", err);
 		return MUTEX_FAILURE;
 	}
 
 	// Add priority nodes
-	printf("Adding %d priority nodes...\n", numNodes);
 	for (int i = 0; i < numNodes; i++){
 		// Execute add priority in thread
 		args[i].tid = i + 1;
@@ -360,10 +356,9 @@ long add_priority_threaded(queue_node_421_t** nodes, int numNodes){
 			}
 			// Destroy mutex lock
 			pthread_mutex_destroy(&lock);
+			// Return error
 			return MUTEX_FAILURE;
 		}
-
-		printf("\tNode: %d (%d)\n", nodes[i]->id, nodes[i]->priority);
 	}
 
 	// Wait for all threads to finish
@@ -377,6 +372,7 @@ long add_priority_threaded(queue_node_421_t** nodes, int numNodes){
 
 	// Destroy mutex lock
 	if ((err = pthread_mutex_destroy(&lock)) != 0){
+		// Print error message and return error
 		fprintf(stderr, "ERROR: Failed to destroy mutex. Error Code: %d\n", err);
 		return MUTEX_FAILURE;
 	}	
@@ -397,14 +393,15 @@ long get_priority_threaded(queue_node_421_t** nodes, int numNodes){
 	thread_arg_t args[numThreads];
 	int err = pthread_mutex_init(&lock, NULL);
 	if (err != 0){
+		// Print error message and return error
 		fprintf(stderr, "ERROR: Failed to initialize mutex. Error Code: %d\n", err);
 		return MUTEX_FAILURE;
 	}
 
 	// Get all priority nodes
-	printf("Getting all priority nodes...\n");
 	for (int i = 0; i < numNodes; i++){
-		queue_node_421_t* node = malloc(sizeof(queue_node_421_t));
+		queue_node_421_t* node = malloc(NODE_SIZE);
+		memset(node, 0, NODE_SIZE);
 
 		// Execute get priority in thread
 		args[i].tid = i + 1;
@@ -417,13 +414,17 @@ long get_priority_threaded(queue_node_421_t** nodes, int numNodes){
 			for (int j = 0; j < i; j++){
 				pthread_join(threads[j], NULL);
 				// Cleanup node
-				free(args[i].node);
+				free(args[j].node);
 			}
+			free(node);
 			// Destroy mutex lock
 			pthread_mutex_destroy(&lock);
+			// Return error
 			return MUTEX_FAILURE;
 		}
 	}
+
+	int retrievedIds[numNodes];
 
 	// Wait for all threads to finish
 	for (int i = 0; i < numNodes; i++){
@@ -435,18 +436,33 @@ long get_priority_threaded(queue_node_421_t** nodes, int numNodes){
 
 		// Report and deallocate node
 		queue_node_421_t* node = args[i].node;
-		printf("\tNode: %d (%d)\n", node->id, node->priority);
+		if (args[i].rc == 0){
+			// Collect retrieved node id
+			retrievedIds[i] = node->id;
+		}
 		free(node);
+	}
+
+	// Sort retrieved node ids
+	qsort(retrievedIds, numNodes, sizeof(int), compareIntegers);
+
+	// Tally results
+	int successCount = 0;
+	for (int i = 0; i < numNodes; i++){
+		if (retrievedIds[i] == nodes[i]->id){
+			successCount++;
+		}
 	}
 
 	// Destroy mutex lock
 	if ((err = pthread_mutex_destroy(&lock)) != 0){
+		// Print error message and return error
 		fprintf(stderr, "ERROR: Failed to destroy mutex. Error Code: %d\n", err);
 		return MUTEX_FAILURE;
 	}	
 
-	// Return success
-	return 0;
+	// Return success or failure
+	return successCount == numNodes ? 0 : TEST_FAILED;
 }
 
 /**
@@ -454,6 +470,7 @@ long get_priority_threaded(queue_node_421_t** nodes, int numNodes){
  * @param data		array of test data.
  * @param numData	number of array elements.
  * @param numThreads	number of threads to run.
+ * @returns 0 if successful, non-zero otherwise.
  */
 long random_add_get_priority_threaded(char** data, int numData, int numThreads){
 	// Initialize threads and mutex lock
@@ -461,27 +478,30 @@ long random_add_get_priority_threaded(char** data, int numData, int numThreads){
 	thread_arg_t args[numThreads];
 	int err = pthread_mutex_init(&lock, NULL);
 	if (err != 0){
+		// Print error message and return error
 		fprintf(stderr, "ERROR: Failed to initialize mutex. Error Code: %d\n", err);
 		return MUTEX_FAILURE;
 	}
 
-	int maxNodes = numThreads / 2;
+	int maxNodes = (int)floor(numThreads / 2);
 	queue_node_421_t** nodes = (void *)malloc(sizeof(queue_node_421_t*) * maxNodes);
 	int nodeCount = 0;
 	int nodesRetrieved = 0;
 
 	// Add/get priority nodes
-	printf("Adding/getting priority nodes using %d threads...\n", numThreads);
+	int numGets = 0;
+	int numOutofOrderGets = 0;
 	int dataOffset = 0;
 	for (int i = 0; i < numThreads; i++){
 		// Determine whether to add or get priority nodes
 		int add = getRandomInt(2) == 1;
 
+		// Create node
+		queue_node_421_t* node = malloc(sizeof(queue_node_421_t));
+
 		// If under retrieval threshold and should add node
-		if (nodeCount + nodesRetrieved < numThreads && add){
-			// Create node
-			queue_node_421_t* node = (void *)malloc(sizeof(queue_node_421_t));
-			node->id = i + 1;
+		if (nodeCount + numOutofOrderGets < maxNodes && add){
+			node->id = nodeCount + 1;
 			node->priority = getPriority(getRandomInt(3));
 			int numValues = getRandomInt(10);
 			char* dataString = concatElements(data, numData, dataOffset, numValues, " ");
@@ -500,21 +520,20 @@ long random_add_get_priority_threaded(char** data, int numData, int numThreads){
 				// Join threads that did start
 				for (int j = 0; j < i; j++){
 					pthread_join(threads[j], NULL);
+					// Cleanup node
+					free(args[j].node);
 				}
+				free(node);
 				// Destroy mutex lock
 				pthread_mutex_destroy(&lock);
+				// Return error
 				return MUTEX_FAILURE;
 			}
 
-			printf("\tNode added: %d (%d)\n", nodes[i]->id, nodes[i]->priority);
 			dataOffset += numValues;
-
 			nodeCount++;
 		}
 		else {
-			// Return node
-			queue_node_421_t* node = malloc(sizeof(queue_node_421_t));
-
 			// Execute get priority in thread
 			args[i].tid = i + 1;
 			args[i].node = node;
@@ -527,16 +546,25 @@ long random_add_get_priority_threaded(char** data, int numData, int numThreads){
 				for (int j = 0; j < i; j++){
 					pthread_join(threads[j], NULL);
 					// Cleanup node
-					free(args[i].node);
+					free(args[j].node);
 				}
+				free(node);
 				// Destroy mutex lock
 				pthread_mutex_destroy(&lock);
+				// Return error
 				return MUTEX_FAILURE;
+			}
+			numGets++;
+			if (numGets > nodeCount){
+				numOutofOrderGets++;
 			}
 		}
 	}
 
+	int retrievedIds[nodeCount];
+
 	// Wait for all threads to finish
+	int numEmptyQueues = 0;
 	for (int i = 0; i < numThreads; i++){
 		err = pthread_join(threads[i], NULL);
 		if (err != 0){
@@ -545,27 +573,62 @@ long random_add_get_priority_threaded(char** data, int numData, int numThreads){
 		}
 
 		// If node being retrieved
-		if (!args[i].add){
-			// Report and deallocate node
+		queue_node_421_t* node = args[i].node;
+		if (args[i].add == 1){
 			queue_node_421_t* node = args[i].node;
-			printf("\tNode retrieved: %d (%d)\n", node->id, node->priority);
-			free(node);
+		}
+		else {
+			if (args[i].rc == 0){
+				// Collect retrieved node id
+				if (nodesRetrieved < nodeCount){
+					retrievedIds[nodesRetrieved++] = node->id;
+				}
+			}
+			else {
+				if (args[i].rc == ENOENT){
+					numEmptyQueues++;
+				}
+			}
 		}
 	}
 
+	// Sort retrieved node ids
+	qsort(retrievedIds, nodesRetrieved, sizeof(int), compareIntegers);
+
+	// Tally results
+	int successCount = 0;
+	for (int i = 0; i < nodesRetrieved; i++){
+		if (retrievedIds[i] == nodes[i]->id){
+			successCount++;
+		}
+	}
+	if (successCount < nodeCount){
+		// Retrieve missing nodes if possible
+		int numRetrievedUnthreaded = getRemainingNodes();
+		nodesRetrieved += numRetrievedUnthreaded;
+	}
+
+	// Cleanup nodes
+	for (int i = 0; i < numThreads; i++){
+		free(args[i].node);
+	}
+	free(nodes);
+
 	// Destroy mutex lock
 	if ((err = pthread_mutex_destroy(&lock)) != 0){
+		// Print error message and return error
 		fprintf(stderr, "ERROR: Failed to destroy mutex. Error Code: %d\n", err);
 		return MUTEX_FAILURE;
 	}	
 
-	// Return success
-	return 0;
+	// Return success or failure
+	return nodesRetrieved != nodeCount;
 }
 
 /**
  * Initializes and frees application randomly using threads.
  * @param numThreads	number of threads to run.
+ * @returns 0 if successful, non-zero otherwise.
  */
 long random_init_free_application_threaded(int numThreads){
 	// Initialize threads and mutex lock
@@ -573,6 +636,7 @@ long random_init_free_application_threaded(int numThreads){
 	thread_arg_t args[numThreads];
 	int err = pthread_mutex_init(&lock, NULL);
 	if (err != 0){
+		// Print error message and return error
 		fprintf(stderr, "ERROR: Failed to initialize mutex. Error Code: %d\n", err);
 		return MUTEX_FAILURE;
 	}
@@ -599,6 +663,7 @@ long random_init_free_application_threaded(int numThreads){
 				}
 				// Destroy mutex lock
 				pthread_mutex_destroy(&lock);
+				// Return error
 				return MUTEX_FAILURE;
 			}
 		}
@@ -615,14 +680,16 @@ long random_init_free_application_threaded(int numThreads){
 				}
 				// Destroy mutex lock
 				pthread_mutex_destroy(&lock);
+				// Return error
 				return MUTEX_FAILURE;
 			}
 		}
 	}
 
 	// Wait for all threads to finish
-	int successCount = 0;
-	int previousInit = 0;
+	int freeSuccessCount = 0;
+	int initSuccessCount = 0;
+	int knownErrors = 0;
 	for (int i = 0; i < numThreads; i++){
 		err = pthread_join(threads[i], NULL);
 		if (err != 0){
@@ -630,25 +697,27 @@ long random_init_free_application_threaded(int numThreads){
 			fprintf(stderr, "ERROR: Failed to join thread %d. Error Code: %d\n", i + 1, err);
 		}
 
-		// Report results
+		// Tally results
 		if (args[i].add){
-			printf("\tApplication inited: %d)\n", args[i].tid);
-			if (args[i].rc == 0 || previousInit && args[i].rc == EPERM){
-				successCount++;
+			if (args[i].rc == 0){
+				initSuccessCount++;
 			}
-			previousInit = 1;
+			else if (args[i].rc == EPERM){
+				knownErrors++;
+			}
 		}
 		else {
-			printf("\tApplication freed: %d)\n", args[i].tid);
-			if (args[i].rc == 0 || !previousInit && args[i].rc == EPERM){
-				successCount++;
+			if (args[i].rc == 0){
+				freeSuccessCount++;
 			}
-			previousInit = 0;
+			else if (args[i].rc == EPERM){
+				knownErrors++;
+			}
 		}
 	}
 
 	// Return success or failure
-	return successCount == numThreads;
+	return initSuccessCount + freeSuccessCount + knownErrors != numThreads;
 }
 
 /**
@@ -676,12 +745,14 @@ void test_init_app(){
 
 /**
  * Runs non-threaded add priority tests.
- * @param data		array of test data.
- * @param numData	number of array elements.
+ * @param nodes		array of test priority nodes.
  */
 void test_add_priority(queue_node_421_t** nodes){
+	// Initialize application
+	long rc = init_kern_application();
+
 	// Test enqueue
-	long rc = kern_add_priority(nodes[0]);
+	rc = kern_add_priority(nodes[0]);
 	if (rc == 0){
 		printPass("test_kern_add_priority_returns_0");
 	}
@@ -702,55 +773,66 @@ void test_add_priority(queue_node_421_t** nodes){
 	}
 
 	// Test add priority on uninitialized queue
-//TBD: free queue
-	rc = kern_add_priority(nodes[1]);
-	if (rc == ENOENT){
-		printPass("test_kern_add_priority_returns_ENOENT");
-	}
-	else {
-		printFail("test_kern_add_priority_returns_ENOENT");
-	}
+	printf("NO WAY TO TEST - kern_add_priority_returns_ENOENT (cannot uninitialize individual queue from user space, skipping...\n");
+	//rc = kern_add_priority(nodes[1]);
+	//if (rc == ENOENT){
+	//	printPass("test_kern_add_priority_returns_ENOENT");
+	//}
+	//else {
+	//	printFail("test_kern_add_priority_returns_ENOENT");
+	//}
 
-	// Test enqueue failed to allocate kernel memory (TBD)
-	rc = kern_add_priority(nodes[2]);
-	if (rc == ENOMEM){
-		printPass("test_kern_add_priority_returns_ENOMEM");
-	}
-	else {
-		printFail("test_kern_add_priority_returns_ENOMEM");
-	}
+	// Test add priority failed to allocate kernel memory (TBD)
+	printf("NO WAY TO TEST - kern_add_priority_returns_ENOMEM (cannot force kmalloc() failure, skipping...\n");
+	//rc = kern_add_priority(nodes[2]);
+	//if (rc == ENOMEM){
+	//	printPass("test_kern_add_priority_returns_ENOMEM");
+	//}
+	//else {
+	//	printFail("test_kern_add_priority_returns_ENOMEM");
+	//}
 
-	// Test enqueue	failed to copy node to kernel memory (TBD)
-	rc = kern_add_priority(nodes[3]);
-	if (rc == EIO){
-		printPass("test_kern_add_priority_returns_EIO");
-	}
-	else {
-		printFail("test_kern_add_priority_returns_EIO");
-	}
+	// Test add priority failed to copy node to kernel memory (TBD)
+	printf("NO WAY TO TEST - kern_add_priority_returns_EIO (cannot force copy_from_user() failure, skipping...\n");
+	//rc = kern_add_priority(nodes[3]);
+	//if (rc == EIO){
+	//	printPass("test_kern_add_priority_returns_EIO");
+	//}
+	//else {
+	//	printFail("test_kern_add_priority_returns_EIO");
+	//}
 }
  
 /**
  * Runs non-threaded get priority tests.
+ * @param nodes		array of test priority nodes.
  */
-void test_get_priority(){
-	// Test get priority
-	queue_node_421_t node;
-	long rc = kern_get_priority(&node);
-	if (rc == 0){
-		printPass("test_kern_get_priority_returns_0");
-	}
-	else {
-		printFail("test_kern_get_priority_returns_0");
-	}
+void test_get_priority(queue_node_421_t** nodes){
+	// Initialize application
+	long rc = init_kern_application();
 
-	// Test get priority empty queues
+	// Test get priority on empty queues
+	queue_node_421_t node;
 	rc = kern_get_priority(&node);
 	if (rc == ENOENT){
 		printPass("test_kern_get_priority_returns_ENOENT");
 	}
 	else {
 		printFail("test_kern_get_priority_returns_ENOENT");
+	}
+
+	// Add test nodes
+	for (int i = 0; i < 5; i++){
+		kern_add_priority(nodes[i]);
+	}
+
+	// Test get priority on populated queues
+	rc = kern_get_priority(&node);
+	if (rc == 0){
+		printPass("test_kern_get_priority_returns_0");
+	}
+	else {
+		printFail("test_kern_get_priority_returns_0");
 	}
 
 	// Free queue (premise: that free_kern_application works!)
@@ -765,27 +847,69 @@ void test_get_priority(){
 		printFail("test_kern_get_priority_returns_EPERM");
 	}
 
-	// Test get priority failed to copy result to user space (TBD)
-	rc = kern_get_priority(&node);
-	if (rc == EIO){
-		printPass("test_kern_get_priority_returns_EIO");
-	}
-	else {
-		printFail("test_kern_get_priority_returns_EIO");
-	}
+	// Test get priority failed to copy result to user space
+	printf("NO WAY TO TEST - kern_get_priority_returns_EIO (cannot force copy_to_user() failure, skipping...\n");
+	//rc = kern_get_priority(&node);
+	//if (rc == EIO){
+	//	printPass("test_kern_get_priority_returns_EIO");
+	//}
+	//else {
+	//	printFail("test_kern_get_priority_returns_EIO");
+	//}
 }
 
 /**
  * Runs non-threaded application deallocation tests.
+ * @param nodes		array of test priority nodes.
  */
-void test_free_app(){
-	// Test free application
+void test_free_app(queue_node_421_t** nodes){
+	// Add test nodes
+	for (int i = 0; i < NUM_NODES; i++){
+		kern_add_priority(nodes[i]);
+	}
+
+	// Test free application with populated queues
 	long rc = free_kern_application();	
 	if (rc == 0){
-		printPass("test_free_kern_application_returns_0");
+		printPass("test_free_kern_application_returns_0_for_populated_queues");
 	}
 	else {
-		printFail("test_free_kern_application_returns_0");
+		printFail("test_free_kern_application_returns_0_for_populated_queues");
+	}
+
+	// Initialize application
+	rc = init_kern_application();
+	// Add test nodes (one with each priority)
+	queue_node_421_t** newNodes = cloneNodes(nodes, 3);
+	newNodes[0]->priority = HIGH;
+	newNodes[1]->priority = MEDIUM;
+	newNodes[2]->priority = LOW;
+	for (int i = 0; i < 3; i++){
+		kern_add_priority(newNodes[i]);
+	}
+
+	// Test free application with single node queues
+	rc = free_kern_application();	
+	if (rc == 0){
+		printPass("test_free_kern_application_returns_0_for_single_node_queues");
+	}
+	else {
+		printFail("test_free_kern_application_returns_0_for_single_node_queues");
+	}
+
+	// Cleanup
+	cleanupNodeArray(newNodes, 3);
+
+	// Initialize application
+	rc = init_kern_application();
+
+	// Test free application with empty queues
+	rc = free_kern_application();
+	if (rc == 0){
+		printPass("test_free_kern_application_returns_0_for_empty_queues");
+	}
+	else {
+		printFail("test_free_kern_application_returns_0_for_empty_queues");
 	}
 
 	// Test free application on uninitialized application
@@ -796,6 +920,47 @@ void test_free_app(){
 	else {
 		printFail("test_free_kern_application_returns_EPERM");
 	}
+}
+
+/**
+ * Deallocates array of dynamically allocated node elements.
+ * @param array		array of dynamically allocated elements.
+ * @param numElements	number of elements in array.
+ */
+void cleanupNodeArray(queue_node_421_t** array, int numElements){
+	if (array != NULL){
+		// Deallocate dyanamically allocated array elements
+		for (int i = 0; i < numElements; i++){
+			free(array[i]);
+		}
+		// Deallocate array
+		free(array);
+	}
+}
+
+/**
+ * Clones given number of priority nodes from an array. It is the
+ * responibility of the caller to deallocate the result.
+ * @param nodes		array of priority nodes.
+ * @param numNodes	number of nodes to clone from beginning of array.
+ *			Must be <= size of array.
+ * @returns array of cloned nodes.
+ */
+queue_node_421_t** cloneNodes(queue_node_421_t** nodes, int numNodes){
+	size_t nodeSize = sizeof(queue_node_421_t);
+
+	// Allocate result array
+	queue_node_421_t** result = (void*)malloc(sizeof(queue_node_421_t*) * numNodes);
+
+	// Clone nodes
+	for (int i = 0; i < numNodes; i++){
+		// Allocate space for node and copy source node to target
+		result[i] = (void*)malloc(nodeSize);
+		memcpy(result[i], nodes[i], nodeSize);
+	}
+
+	// Return result
+	return result;
 }
 
 /**
@@ -831,6 +996,38 @@ char* concatElements(char** array, int numElements, int start, int count, char* 
 	buffer[pos] = '\0';
 	char* result = strdup(buffer);
 	free(buffer);
+	return result;
+}
+
+/**
+ * Creates given number of priority nodes. It is the responsibility of the
+ * caller to deallocate the result.
+ * @param numNodes	number of nodes to create.
+ * @param data		array of test data.
+ * @param numData	number of array elements.
+ * @returns array of priority nodes.
+ */
+queue_node_421_t** createPriorityNodes(int numNodes, char** data, int numData){
+	queue_node_421_t** result = NULL;
+
+	if (numNodes <= 0){
+		return result;
+	}
+
+	result = (void *)malloc(sizeof(queue_node_421_t*) * numNodes);
+	int dataOffset = 0;
+	for (int i = 0; i < numNodes; i++){
+		result[i] = (void *)malloc(sizeof(queue_node_421_t));
+		result[i]->id = i + 1;
+		result[i]->priority = getPriority(getRandomInt(3));
+		int numValues = getRandomInt(10);
+		char* dataString = concatElements(data, numData, dataOffset, numValues, " ");
+		strncpy(result[i]->data, dataString, sizeof(result[i]->data) - 1);
+		free(dataString);
+
+		dataOffset += numValues;
+	}
+
 	return result;
 }
 
@@ -916,5 +1113,32 @@ void printPass(char* message){
  */
 void printFail(char* message){
 	printf("[\033[0;31mFAILURE\033[0m]: %s\n", message);
+}
+
+/**
+ * Compare two integers for sorting purposes.
+ * @param a	first integer.
+ * @param b	second integer.
+ * @returns -1 if first integer is less than second, 1 if first integer is
+ *		greater than second, or 0 if arguments are equal.
+ */
+int compareIntegers(const void *a, const void *b){
+    return (*(int*)a - *(int*)b);
+}
+
+/**
+ * Retrieves any remaining nodes in priority queues.
+ * @returns count of nodes retrieved.
+ */
+int getRemainingNodes(){
+	int result = 0;
+
+	queue_node_421_t node;
+	int rc;
+	while (kern_get_priority(&node) == 0){
+		result++;
+	}
+
+	return result;
 }
 

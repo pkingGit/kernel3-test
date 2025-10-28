@@ -4,13 +4,13 @@ srctree ?= .
 
 build-indep:
 build-arch:
-	$(MAKE) KERNELRELEASE=5.15.67-test-project3-kernel3+ ARCH=x86 	KBUILD_BUILD_VERSION=7 -f $(srctree)/Makefile
+	$(MAKE) KERNELRELEASE=5.15.67-test-project3-kernel3+ ARCH=x86 	KBUILD_BUILD_VERSION=14 -f $(srctree)/Makefile
 
 build: build-arch
 
 binary-indep:
 binary-arch: build-arch
-	$(MAKE) KERNELRELEASE=5.15.67-test-project3-kernel3+ ARCH=x86 	KBUILD_BUILD_VERSION=7 -f $(srctree)/Makefile intdeb-pkg
+	$(MAKE) KERNELRELEASE=5.15.67-test-project3-kernel3+ ARCH=x86 	KBUILD_BUILD_VERSION=14 -f $(srctree)/Makefile intdeb-pkg
 
 clean:
 	rm -rf debian/*tmp debian/files
